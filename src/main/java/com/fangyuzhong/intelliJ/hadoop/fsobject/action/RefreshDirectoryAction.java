@@ -28,7 +28,9 @@ public class RefreshDirectoryAction
     {
         if(ActionUtil.TestHdfsConnect(e.getProject(),fileSystemObject.getConnectionHandler()))
         {
+
             fileSystemObject.rebuildTreeChildren();
+
         }
     }
 }

@@ -87,10 +87,11 @@ public class HDFSUtil
         Path path = new Path(strDirPath);
         try
         {
+            FileStatus fileStatus = fileSystem.getFileStatus(path);
             AclStatus aclStatus= fileSystem.getAclStatus(path);
             if(aclStatus.getOwner().equals(strUserName))
             {
-               return aclStatus.getPermission().getUserAction();
+               return fileStatus.getPermission().getUserAction();
             }
             List<AclEntry> aclEntries= aclStatus.getEntries();
             for(AclEntry aclEntry:aclEntries)
@@ -103,7 +104,7 @@ public class HDFSUtil
                     }
                 }
             }
-            return  aclStatus.getPermission().getOtherAction();
+            return  fileStatus.getPermission().getOtherAction();
         }
         catch (IOException ex)
         {

@@ -72,7 +72,12 @@ public class CreateDirectoryAction
                     strPath = fileSystemObjectBundle.getLocationString();
                 }
             }
-            if (StringUtil.isEmptyOrSpaces(strPath)) return;
+            if (StringUtil.isEmptyOrSpaces(strPath))  {
+                MessageUtil.showErrorDialog(e.getProject(),
+                        LocaleLanguageManager.getInstance().getResourceBundle().getString(LanguageKeyWord.MESSAGETILE),
+                        LocaleLanguageManager.getInstance().getResourceBundle().getString(LanguageKeyWord.INPUTINFORMATION));
+                return;
+            }
             InputDialog inputDialog = new InputDialog(e.getProject(),
                     LocaleLanguageManager.getInstance().getResourceBundle().getString(LanguageKeyWord.INPUTTEXT), "");
             inputDialog.show();
@@ -110,6 +115,7 @@ public class CreateDirectoryAction
                 } catch (Exception ex)
                 {
 
+                    throw new RuntimeException(ex);
                 }
                 if (fileSystemObject != null)
                 {
@@ -137,7 +143,12 @@ public class CreateDirectoryAction
     public  void createDir(FileSystem fileSystem, String strDirPath, String strUserName, Project project) throws IOException
     {
         Path path = new Path(strDirPath);
-        FsAction fsAction =HDFSUtil.getDirFileActionByUser(fileSystem,fileSystemObject.getLocationString(),strUserName);
+        String srcPath = "/";
+        if (fileSystemObject != null) {
+            srcPath = fileSystemObject.getLocationString();
+        }
+
+        FsAction fsAction =HDFSUtil.getDirFileActionByUser(fileSystem, srcPath,strUserName);
         if(fsAction==FsAction.ALL||fsAction==FsAction.WRITE||fsAction==FsAction.WRITE_EXECUTE)
         {
             connectionHandler.getMainFileSystem().mkdirs(path);

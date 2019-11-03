@@ -1,6 +1,7 @@
 package com.fangyuzhong.intelliJ.hadoop.fsobject.action;
 
 import com.fangyuzhong.intelliJ.hadoop.core.Icons;
+import com.fangyuzhong.intelliJ.hadoop.core.util.MessageUtil;
 import com.fangyuzhong.intelliJ.hadoop.fsconnection.ConnectionHandler;
 import com.fangyuzhong.intelliJ.hadoop.fsobject.FileSystemObject;
 import com.fangyuzhong.intelliJ.hadoop.globalization.LanguageKeyWord;
@@ -35,9 +36,8 @@ public class ViewFileAction
         {
             String hdfsPath = fileSystemObject.getLocationString();
             String hdfsUrl = connectionHandler.getSettings().getFileSystemSettings().getHDFSUrl();
-            int urllen = hdfsUrl.length();
-            int hdfslen = hdfsPath.length();
-            String subFilePath = hdfsPath.substring(hdfsUrl.length(),hdfsPath.length());
+
+            String subFilePath = hdfsPath.substring(hdfsUrl.length());
             subFilePath =subFilePath.substring(0,subFilePath.lastIndexOf('/'));
             if(!File.separator.equals("/"))
             {
@@ -51,18 +51,18 @@ public class ViewFileAction
                 file.mkdirs();
             }
             String filePath = storDataDirPath+File.separator+fileSystemObject.getName();
-            if(!new File(filePath).exists())
-            {
-                connectionHandler.getMainFileSystem().copyToLocalFile(new Path(hdfsPath), new Path(storDataDirPath));
-            }
-           // String filePath ="/home/hadoopuser/HadoopIntellijPlugin-1.0.txt";
+            connectionHandler.getMainFileSystem().copyToLocalFile(false, new Path(hdfsPath), new Path(storDataDirPath),  true);
+
+
             FileEditorManager fileEditorManager = FileEditorManager.getInstance(e.getProject());
-            VirtualFile vf = LocalFileSystem.getInstance().findFileByPath(filePath);
+            VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(new File(filePath));
             fileEditorManager.openFile(vf, true, true);
 
         }
         catch (Exception ex)
         {
+            ex.printStackTrace();
+            MessageUtil.showErrorDialog(e.getProject(), "打开文件失败",ex);
 
         }
 
